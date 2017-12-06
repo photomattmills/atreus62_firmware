@@ -39,15 +39,15 @@ bool macro_send = false;
 // The 'keys' in this keymap have a modifier and a keycode; I tried doing this as a struct but the compiler got mad. :shrug:
 int layers[5][13] = {
     {
-      K_ESCAPE,         K_GRAVE,  K_BRACKET_LEFT, K_BRACKET_RIGHT, MODIFIERKEY_SHIFT, K_BACKSPACE, K_RETURN,    K_SPACE, K_ARROW_LEFT, K_ARROW_UP, K_ARROW_RIGHT, K_ARROW_DOWN, macro
+      K_ESCAPE,          K_GRAVE, K_BRACKET_LEFT, K_BRACKET_RIGHT, MODIFIERKEY_SHIFT, MODIFIERKEY_GUI, K_RETURN, K_SPACE, K_ARROW_LEFT, K_ARROW_UP, K_ARROW_RIGHT, K_ARROW_DOWN, macro
     },{
-      MODIFIERKEY_SHIFT, K_Z,      K_X,            K_C,             K_V,          K_B,       MODIFIERKEY_GUI, K_N,     K_M,          K_COMMA,    K_PERIOD,      K_SLASH,      MODIFIERKEY_SHIFT
+      MODIFIERKEY_SHIFT, K_Z,     K_X,            K_C,             K_V,          K_B, K_BACKSPACE,     K_N,      K_M,     K_COMMA,      K_PERIOD,   K_SLASH,     MODIFIERKEY_SHIFT
     },{
-      MODIFIERKEY_CTRL, K_A,      K_S,            K_D,             K_F,          K_G,        K_NONE,      K_H,     K_J,          K_K,        K_L,           K_SEMICOLON,  K_APOSTROPHE
+      MODIFIERKEY_CTRL,  K_A,     K_S,            K_D,             K_F,          K_G, K_NONE,          K_H,      K_J,     K_K,          K_L,        K_SEMICOLON, K_APOSTROPHE
     },{
-      K_TAB,            K_Q,      K_W,            K_E,             K_R,          K_T,        K_NONE,      K_Y,     K_U,          K_I,        K_O,           K_P,          K_BACKSLASH
+      K_TAB,             K_Q,     K_W,            K_E,             K_R,          K_T, K_NONE,          K_Y,      K_U,     K_I,          K_O,        K_P,         K_BACKSLASH
     },{
-      K_EQUAL,          K_1,      K_2,            K_3,             K_4,          K_5,        K_NONE,      K_6,     K_7,          K_8,        K_9,           K_0,          K_MINUS
+      K_EQUAL,           K_1,     K_2,            K_3,             K_4,          K_5, K_NONE,          K_6,      K_7,     K_8,          K_9,        K_0,         K_MINUS
     },
 };
 
