@@ -35,9 +35,15 @@ int col_12 = 8;
 
 int macro = 999999999;
 bool macro_send = false;
+bool state;
 
+int keyreport_index = 0;
 // The 'keys' in this keymap have a modifier and a keycode; I tried doing this as a struct but the compiler got mad. :shrug:
-int layers[5][13] = {
+
+const int number_of_rows = 5;
+const int number_of_columns = 13;
+
+int layers[number_of_rows][number_of_columns] = {
     {
       K_ESCAPE,          K_GRAVE, K_BRACKET_LEFT, K_BRACKET_RIGHT, MODIFIERKEY_SHIFT, MODIFIERKEY_GUI, K_RETURN, K_SPACE, K_ARROW_LEFT, K_ARROW_UP, K_ARROW_RIGHT, K_ARROW_DOWN, macro
     },{
@@ -51,39 +57,43 @@ int layers[5][13] = {
     },
 };
 
-// I know I could construct these as literal ints,         but I like having them named for purposes of easy debugging
+unsigned long debounce_grid[number_of_rows][number_of_columns][2];
+unsigned int debounce_wait = 20;
 
+// I know I could construct these as literal ints, but I like having them named for purposes of easy debugging
 int columns[] = {col_0, col_1, col_2, col_3, col_4, col_5, col_6, col_7, col_8, col_9, col_10, col_11, col_12};
 
 int rows[] = {row_0, row_1, row_2, row_3, row_4};
-
 
 bool key_state;
 
 void setup() {
   delay(500);
-
   Serial.begin(57600);
+  if(0){
+    Serial.println("zero is truthy!");
+  }
   Serial.println("Hello");
 }
 
 void loop() {
   get_keys();
   send_keys();
+  delay(10);
 }
 
 void get_keys() {
-  int index = 0;
+  keyreport_index = 0;
   for (size_t column = 0; column < 13; column++) { // column loop
     for (size_t row = 0; row < 5; row++) {
-      bool state = key_pressed(row, column);// || key_pressed_inverse(row, column);
+      state = key_pressed(row, column);// || key_pressed_inverse(row, column);
       if (state) {
         int key_code = layers[row][column];
         if (key_code > 0x6A){
           keyReport.modifier = modifier(key_code);
         }else{
-          keyReport.keycode[index] = key_code;
-          (key_code != 0) ? (index++) : 0;
+          keyReport.keycode[keyreport_index] = key_code;
+          (key_code != 0) ? (keyreport_index++) : 0;
         }
       }
       pinMode(rows[row], INPUT); //
@@ -121,7 +131,7 @@ void set_modifiers(){
   Keyboard.set_modifier(keyReport.modifier);
 }
 
-bool key_pressed(uint8_t row, uint8_t column){
+bool old_key_pressed(uint8_t row, uint8_t column){
   pinMode(rows[row], OUTPUT);
   pinMode(columns[column], INPUT_PULLUP);
   digitalWrite(rows[row], LOW);
@@ -129,7 +139,30 @@ bool key_pressed(uint8_t row, uint8_t column){
   return !key_state;
 }
 
-// I forget what this is doing? something about making the modifiers work
+bool key_pressed(uint8_t row, uint8_t column){
+  // set up the row/column
+  pinMode(rows[row], OUTPUT);
+  pinMode(columns[column], INPUT_PULLUP);
+  digitalWrite(rows[row], LOW);
+  // actually read the key state
+  key_state = !digitalRead(columns[column]);
+
+  if (key_state != debounce_grid[row][column][0]) {
+    // reset the debouncing timer since things have changed
+    debounce_grid[row][column][1] = millis();
+  }
+  int previous = debounce_grid[row][column][0];
+
+  if ((millis() - debounce_grid[row][column][1]) > debounce_wait){
+    debounce_grid[row][column][0] = key_state; // store the current state for comparison on the next loop
+    return key_state; // if the key changed and stayed steady for the debounce time, go ahead and return the current state
+  }else{
+    debounce_grid[row][column][0] = key_state; // store the current state for comparison on the next loop
+    return previous; // else we pretend it hasn't changed
+  }
+}
+
+// modifiers are added with boolean logic here
 int modifier(int code){
   return keyReport.modifier | code;
 }
