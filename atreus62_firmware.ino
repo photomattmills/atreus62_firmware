@@ -57,7 +57,7 @@ int layers[number_of_rows][number_of_columns] = {
     },
 };
 
-unsigned long debounce_grid[number_of_rows][number_of_columns][2];
+unsigned long debounce_grid[number_of_rows][number_of_columns][3];
 unsigned int debounce_wait = 20;
 
 // I know I could construct these as literal ints, but I like having them named for purposes of easy debugging
@@ -79,7 +79,6 @@ void setup() {
 void loop() {
   get_keys();
   send_keys();
-  delay(10);
 }
 
 void get_keys() {
@@ -151,15 +150,16 @@ bool key_pressed(uint8_t row, uint8_t column){
     // reset the debouncing timer since things have changed
     debounce_grid[row][column][1] = millis();
   }
-  int previous = debounce_grid[row][column][0];
-
+  
+  bool return_val;
   if ((millis() - debounce_grid[row][column][1]) > debounce_wait){
-    debounce_grid[row][column][0] = key_state; // store the current state for comparison on the next loop
-    return key_state; // if the key changed and stayed steady for the debounce time, go ahead and return the current state
+    return_val = key_state; // if the key changed and stayed steady for the debounce time, go ahead and return the current state
+    debounce_grid[row][column][2] = key_state; // set the stable value
   }else{
-    debounce_grid[row][column][0] = key_state; // store the current state for comparison on the next loop
-    return previous; // else we pretend it hasn't changed
+    return_val = debounce_grid[row][column][2]; // return the 'stable' value
   }
+  debounce_grid[row][column][0] = key_state; // store the current state for comparison on the next loop
+  return return_val;
 }
 
 // modifiers are added with boolean logic here
