@@ -117,15 +117,6 @@ void set_keys(){
   Keyboard.set_key6(keyReport.keycode[5]);
 }
 
-void clear_keys(){
-  Keyboard.set_key1(0);
-  Keyboard.set_key2(0);
-  Keyboard.set_key3(0);
-  Keyboard.set_key4(0);
-  Keyboard.set_key5(0);
-  Keyboard.set_key6(0);
-}
-
 void set_modifiers(){
   Keyboard.set_modifier(keyReport.modifier);
 }
@@ -150,7 +141,7 @@ bool key_pressed(uint8_t row, uint8_t column){
     // reset the debouncing timer since things have changed
     debounce_grid[row][column][1] = millis();
   }
-  
+
   bool return_val;
   if ((millis() - debounce_grid[row][column][1]) > debounce_wait){
     return_val = key_state; // if the key changed and stayed steady for the debounce time, go ahead and return the current state
