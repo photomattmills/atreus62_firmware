@@ -45,7 +45,7 @@ const int number_of_columns = 13;
 
 int layers[number_of_rows][number_of_columns] = {
     {
-      K_ESCAPE,          K_GRAVE, K_BRACKET_LEFT, K_BRACKET_RIGHT, MODIFIERKEY_SHIFT, MODIFIERKEY_GUI, K_RETURN, K_SPACE, K_ARROW_LEFT, K_ARROW_UP, K_ARROW_RIGHT, K_ARROW_DOWN, macro
+      K_ESCAPE,          K_GRAVE, K_BRACKET_LEFT, K_BRACKET_RIGHT, MODIFIERKEY_SHIFT, MODIFIERKEY_GUI, K_RETURN, K_SPACE, K_ARROW_LEFT, K_ARROW_UP, K_ARROW_RIGHT, K_ARROW_DOWN, MODIFIERKEY_ALT
     },{
       MODIFIERKEY_SHIFT, K_Z,     K_X,            K_C,             K_V,          K_B, K_BACKSPACE,     K_N,      K_M,     K_COMMA,      K_PERIOD,   K_SLASH,     MODIFIERKEY_SHIFT
     },{
@@ -90,7 +90,7 @@ void get_keys() {
         int key_code = layers[row][column];
         if (key_code > 0x6A){
           keyReport.modifier = modifier(key_code);
-        }else{
+        }else if (keyreport_index < 6){
           keyReport.keycode[keyreport_index] = key_code;
           (key_code != 0) ? (keyreport_index++) : 0;
         }
