@@ -1,4 +1,5 @@
 #include "hid-keycode.h"
+#include "Keyboard.h"
 
 typedef struct
 {
@@ -45,11 +46,11 @@ const int number_of_columns = 13;
 
 int layers[number_of_rows][number_of_columns] = {
     {
-      K_ESCAPE,          K_GRAVE, K_BRACKET_LEFT, K_BRACKET_RIGHT, MODIFIERKEY_SHIFT, MODIFIERKEY_GUI, K_RETURN, K_SPACE, K_ARROW_LEFT, K_ARROW_UP, K_ARROW_RIGHT, K_ARROW_DOWN, MODIFIERKEY_ALT
+      K_ESCAPE,          K_GRAVE, K_BRACKET_LEFT, K_BRACKET_RIGHT, K_SHIFT_LEFT, K_GUI_LEFT, K_RETURN, K_SPACE, K_ARROW_LEFT, K_ARROW_UP, K_ARROW_RIGHT, K_ARROW_DOWN, K_ALT_LEFT
     },{
-      MODIFIERKEY_SHIFT, K_Z,     K_X,            K_C,             K_V,          K_B, K_BACKSPACE,     K_N,      K_M,     K_COMMA,      K_PERIOD,   K_SLASH,     MODIFIERKEY_SHIFT
+      K_SHIFT_LEFT,      K_Z,     K_X,            K_C,             K_V,          K_B, K_BACKSPACE,     K_N,      K_M,     K_COMMA,      K_PERIOD,   K_SLASH,     K_SHIFT_LEFT
     },{
-      MODIFIERKEY_CTRL,  K_A,     K_S,            K_D,             K_F,          K_G, K_NONE,          K_H,      K_J,     K_K,          K_L,        K_SEMICOLON, K_APOSTROPHE
+      K_CONTROL_LEFT,  K_A,     K_S,            K_D,             K_F,          K_G, K_NONE,          K_H,      K_J,     K_K,          K_L,        K_SEMICOLON, K_APOSTROPHE
     },{
       K_TAB,             K_Q,     K_W,            K_E,             K_R,          K_T, K_NONE,          K_Y,      K_U,     K_I,          K_O,        K_P,         K_BACKSLASH
     },{
