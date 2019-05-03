@@ -50,13 +50,13 @@ const int number_of_columns = 16;
 
 int layers[number_of_rows][number_of_columns] = {
   {
-    K_EQUAL, K_1, K_2, K_3, K_4, K_5, K_Q, K_W, K_E, K_R, K_6, K_7, K_8, K_9, K_0, K_MINUS
+    K_EQUAL, K_1, K_2, K_3, K_4, K_5, K_NONE, K_NONE, K_NONE, K_NONE, K_6, K_7, K_8, K_9, K_0, K_MINUS
   },
   {
     K_TAB, K_Q, K_W, K_E, K_R, K_T, K_BRACKET_LEFT, K_NONE, K_NONE, K_BRACKET_RIGHT, K_Y, K_U, K_I, K_O, K_P, K_BACKSLASH
   },
   {
-    K_CONTROL_LEFT, K_A, K_S, K_D, K_F, K_G, K_NONE, K_ALT_LEFT, K_NONE, K_NONE, K_H, K_J, K_K, K_L, K_SEMICOLON, K_GRAVE
+    K_CONTROL_LEFT, K_A, K_S, K_D, K_F, K_G, K_NONE, K_ALT_LEFT, K_NONE, K_NONE, K_H, K_J, K_K, K_L, K_SEMICOLON, K_APOSTROPHE
   },
   {
     K_SHIFT_LEFT, K_Z, K_X, K_C, K_V, K_B, K_NONE, K_NONE, K_NONE, K_NONE, K_N, K_M, K_COMMA, K_PERIOD, K_SLASH, K_SHIFT_LEFT
@@ -92,17 +92,13 @@ void loop() {
   get_keys();
   send_keys();
 }
-
+// It's only the comma-period ligature so far
 void get_keys() {
   keyreport_index = 0;
   for (int column = 0; column < 16; column++) { // column loop
-    for (int row = 5; row >= 0; row--) {
-      state = old_key_pressed(row, column);
+    for (int row = 0; row < 6; row++) {
+      state = debounce_key_pressed(row, column);
       if (state) {
-        Serial.print(row);
-        Serial.print(",");
-        Serial.println(column);
-
         int key_code = layers[row][column];
         if (key_code > 0x6A){
           keyReport.modifier = modifier(key_code);
@@ -151,8 +147,10 @@ bool debounce_key_pressed(uint8_t row, uint8_t column){
   pinMode(rows[row], OUTPUT);
   pinMode(columns[column], INPUT_PULLUP);
   digitalWrite(rows[row], LOW);
-  // actually read the key state
   key_state = !digitalRead(columns[column]);
+  digitalWrite(rows[row], HIGH);
+  // pinMode(rows[row], INPUT); //
+  pinMode(columns[column], INPUT);
 
   if (key_state != debounce_grid[row][column][0]) {
     // reset the debouncing timer since things have changed
