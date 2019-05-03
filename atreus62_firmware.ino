@@ -14,25 +14,29 @@ hid_keyboard_report_t keyReport = { 0, 0, { 0 } };
 hid_keyboard_report_t blankReport = { 0, 0, { 0 } };
 
 
-int row_0 = 7;
-int row_1 = 6;
-int row_2 = 5;
-int row_3 = 1;
-int row_4 = 2;
+int row_0 = 0;
+int row_1 = 1;
+int row_2 = 2;
+int row_3 = 3;
+int row_4 = 4;
+int row_5 = 5;
 
-int col_0 = 20;
-int col_1 = 19;
-int col_2 = 18;
-int col_3 = 17;
-int col_4 = 16;
-int col_5 = 15;
-int col_6 = 14;
-int col_7 = 13;
-int col_8 = 12;
-int col_9 = 11;
-int col_10 = 10;
-int col_11 = 9;
-int col_12 = 8;
+int col_0 = 31;
+int col_1 = 30;
+int col_2 = 29;
+int col_3 = 28;
+int col_4 = 27;
+int col_5 = 26;
+int col_6 = 25;
+int col_7 = 24;
+int col_8 = 13;
+int col_9 = 12;
+int col_10 = 11;
+int col_11 = 10;
+int col_12 = 9;
+int col_13 = 8;
+int col_14 = 7;
+int col_15 = 6;
 
 int macro = 999999999;
 bool macro_send = false;
@@ -41,30 +45,37 @@ bool state;
 int keyreport_index = 0;
 // The 'keys' in this keymap have a modifier and a keycode; I tried doing this as a struct but the compiler got mad. :shrug:
 
-const int number_of_rows = 5;
-const int number_of_columns = 13;
+const int number_of_rows = 6;
+const int number_of_columns = 16;
 
 int layers[number_of_rows][number_of_columns] = {
-    {
-      K_ESCAPE,          K_GRAVE, K_BRACKET_LEFT, K_BRACKET_RIGHT, K_SHIFT_LEFT, K_GUI_LEFT, K_RETURN, K_SPACE, K_ARROW_LEFT, K_ARROW_UP, K_ARROW_RIGHT, K_ARROW_DOWN, K_ALT_LEFT
-    },{
-      K_SHIFT_LEFT,      K_Z,     K_X,            K_C,             K_V,          K_B, K_BACKSPACE,     K_N,      K_M,     K_COMMA,      K_PERIOD,   K_SLASH,     K_SHIFT_LEFT
-    },{
-      K_CONTROL_LEFT,  K_A,     K_S,            K_D,             K_F,          K_G, K_NONE,          K_H,      K_J,     K_K,          K_L,        K_SEMICOLON, K_APOSTROPHE
-    },{
-      K_TAB,             K_Q,     K_W,            K_E,             K_R,          K_T, K_NONE,          K_Y,      K_U,     K_I,          K_O,        K_P,         K_BACKSLASH
-    },{
-      K_EQUAL,           K_1,     K_2,            K_3,             K_4,          K_5, K_NONE,          K_6,      K_7,     K_8,          K_9,        K_0,         K_MINUS
-    },
+  {
+    K_EQUAL, K_1, K_2, K_3, K_4, K_5, K_Q, K_W, K_E, K_R, K_6, K_7, K_8, K_9, K_0, K_MINUS
+  },
+  {
+    K_TAB, K_Q, K_W, K_E, K_R, K_T, K_BRACKET_LEFT, K_NONE, K_NONE, K_BRACKET_RIGHT, K_Y, K_U, K_I, K_O, K_P, K_BACKSLASH
+  },
+  {
+    K_CONTROL_LEFT, K_A, K_S, K_D, K_F, K_G, K_NONE, K_ALT_LEFT, K_NONE, K_NONE, K_H, K_J, K_K, K_L, K_SEMICOLON, K_GRAVE
+  },
+  {
+    K_SHIFT_LEFT, K_Z, K_X, K_C, K_V, K_B, K_NONE, K_NONE, K_NONE, K_NONE, K_N, K_M, K_COMMA, K_PERIOD, K_SLASH, K_SHIFT_LEFT
+  },
+  {
+    K_ESCAPE, K_GRAVE, K_BRACKET_LEFT, K_SHIFT_LEFT, K_GUI_LEFT, K_NONE, K_GUI_LEFT, K_NONE, K_NONE, K_NONE, K_NONE, K_ARROW_LEFT, K_ARROW_UP, K_ARROW_RIGHT, K_ARROW_DOWN, K_SHIFT_LEFT
+  },
+  {
+    K_NONE, K_NONE, K_NONE, K_NONE, K_NONE, K_BACKSPACE, K_DELETE, K_PAGE_DOWN, K_NONE, K_RETURN, K_SPACE, K_M, K_COMMA, K_PERIOD, K_SLASH, K_SHIFT_RIGHT
+  }
 };
 
 unsigned long debounce_grid[number_of_rows][number_of_columns][3];
 unsigned int debounce_wait = 20;
 
 // I know I could construct these as literal ints, but I like having them named for purposes of easy debugging
-int columns[] = {col_0, col_1, col_2, col_3, col_4, col_5, col_6, col_7, col_8, col_9, col_10, col_11, col_12};
+int columns[] = {col_0, col_1, col_2, col_3, col_4, col_5, col_6, col_7, col_8, col_9, col_10, col_11, col_12, col_13, col_14, col_15};
 
-int rows[] = {row_0, row_1, row_2, row_3, row_4};
+int rows[] = {row_0, row_1, row_2, row_3, row_4, row_5};
 
 bool key_state;
 
@@ -84,10 +95,14 @@ void loop() {
 
 void get_keys() {
   keyreport_index = 0;
-  for (size_t column = 0; column < 13; column++) { // column loop
-    for (size_t row = 0; row < 5; row++) {
-      state = key_pressed(row, column);// || key_pressed_inverse(row, column);
+  for (int column = 0; column < 16; column++) { // column loop
+    for (int row = 5; row >= 0; row--) {
+      state = old_key_pressed(row, column);
       if (state) {
+        Serial.print(row);
+        Serial.print(",");
+        Serial.println(column);
+
         int key_code = layers[row][column];
         if (key_code > 0x6A){
           keyReport.modifier = modifier(key_code);
@@ -96,8 +111,6 @@ void get_keys() {
           (key_code != 0) ? (keyreport_index++) : 0;
         }
       }
-      pinMode(rows[row], INPUT); //
-      pinMode(columns[column], INPUT); // we turn off the pullup to save power between cycles
     }
   }
 }
@@ -127,10 +140,13 @@ bool old_key_pressed(uint8_t row, uint8_t column){
   pinMode(columns[column], INPUT_PULLUP);
   digitalWrite(rows[row], LOW);
   key_state = digitalRead(columns[column]);
+  digitalWrite(rows[row], HIGH);
+  // pinMode(rows[row], INPUT); //
+  pinMode(columns[column], INPUT);
   return !key_state;
 }
 
-bool key_pressed(uint8_t row, uint8_t column){
+bool debounce_key_pressed(uint8_t row, uint8_t column){
   // set up the row/column
   pinMode(rows[row], OUTPUT);
   pinMode(columns[column], INPUT_PULLUP);
@@ -156,5 +172,15 @@ bool key_pressed(uint8_t row, uint8_t column){
 
 // modifiers are added with boolean logic here
 int modifier(int code){
-  return keyReport.modifier | code;
+  int mod = 0;
+  if (code == 0xe0) {
+    mod = 0x01;
+  } else if (code == 0xe1) {
+    mod = 0x02;
+  } else if (code == 0xe2) {
+    mod = 0x04;
+  } else if (code == 0xe3) {
+    mod = 0x08;
+  }
+  return keyReport.modifier | mod;
 }
